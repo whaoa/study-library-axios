@@ -1,7 +1,16 @@
+/*
+ * @Date: 2020-03-22 14:54:49
+ * @LastEditors: Wanghao
+ * @LastEditTime: 2020-03-25 14:32:06
+ * @FilePath: \source-code\axios\lib\helpers\isAbsoluteURL.js
+ * @Description: 
+ */
 'use strict';
 
 /**
  * Determines whether the specified URL is absolute
+ *
+ * 判断一个 url 是否是绝对路径
  *
  * @param {string} url The URL to test
  * @returns {boolean} True if the specified URL is absolute, otherwise false

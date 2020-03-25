@@ -1,4 +1,3 @@
-/* axios v0.19.2 | (c) 2020 by Matt Zabriskie */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -55,14 +54,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	// 入口文件
 	module.exports = __webpack_require__(1);
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 17:30:13
+	 * @FilePath: \source-code\axios\lib\axios.js
+	 * @Description: 主文件
+	 */
 	'use strict';
 	
+	// 导入相关工具方法
 	var utils = __webpack_require__(2);
 	var bind = __webpack_require__(3);
 	var Axios = __webpack_require__(4);
@@ -71,48 +79,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Create an instance of Axios
+	 * 
+	 * 生成 axios 实例 的 工厂方法
 	 *
 	 * @param {Object} defaultConfig The default config for the instance
 	 * @return {Axios} A new instance of Axios
 	 */
 	function createInstance(defaultConfig) {
+	  // 创建 axios 实例
 	  var context = new Axios(defaultConfig);
+	  // 更改 Axios.prototype.request 的 this 的指向为 context
 	  var instance = bind(Axios.prototype.request, context);
 	
 	  // Copy axios.prototype to instance
+	  // 将 Axios.prototype 原型上的属性方法 复制到 instance 实例上
 	  utils.extend(instance, Axios.prototype, context);
 	
 	  // Copy context to instance
+	  // 将 context 原型上的属性方法 复制到 instance 实例上
 	  utils.extend(instance, context);
 	
 	  return instance;
 	}
 	
 	// Create the default instance to be exported
+	// 创建 axios 实例
 	var axios = createInstance(defaults);
 	
 	// Expose Axios class to allow class inheritance
+	// 将 Axios 类 挂载到 实例上
 	axios.Axios = Axios;
 	
 	// Factory for creating new instances
+	// 将 工厂函数 挂载到 实例上
 	axios.create = function create(instanceConfig) {
 	  return createInstance(mergeConfig(axios.defaults, instanceConfig));
 	};
 	
 	// Expose Cancel & CancelToken
+	// 将 取消相关方法 挂载到 实例上
 	axios.Cancel = __webpack_require__(23);
 	axios.CancelToken = __webpack_require__(24);
 	axios.isCancel = __webpack_require__(9);
 	
 	// Expose all/spread
+	// 将 all 和 spread 方法 挂载到 实例上
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
 	axios.spread = __webpack_require__(25);
 	
+	// 导出 实例
 	module.exports = axios;
 	
 	// Allow use of default import syntax in TypeScript
+	// 以 ES6 模块化方式导出
 	module.exports.default = axios;
 
 
@@ -122,17 +143,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	// 引入 bind 方法
 	var bind = __webpack_require__(3);
 	
 	/*global toString:true*/
 	
 	// utils is a library of generic helper functions non-specific to axios
 	
+	// 缓存该 toString 方法, 方便下面方法使用
 	var toString = Object.prototype.toString;
 	
 	/**
 	 * Determine if a value is an Array
-	 *
+	 * 
+	 * 判断参数类型是否为 array
+	 * 
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is an Array, otherwise false
 	 */
@@ -142,6 +167,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is undefined
+	 * 
+	 * 判断参数类型是否为 undefined
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if the value is undefined, otherwise false
@@ -152,17 +179,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a Buffer
+	 * 
+	 * 判断参数类型是否为 buffer
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Buffer, otherwise false
 	 */
 	function isBuffer(val) {
-	  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-	    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
+	  return val !== null &&                             // 参数 不为 null
+	  !isUndefined(val) &&                               // 参数 不为 undefined
+	  val.constructor !== null &&                        // 参数的 构造函数 不为 null
+	  !isUndefined(val.constructor) &&                   // 参数的 构造函数 不为 undefined
+	  typeof val.constructor.isBuffer === 'function' &&  // 参数的 构造函数 中具有 isBuffer 方法
+	  val.constructor.isBuffer(val);                     // 调用 isBuffer 方法判断数据是否是 Buffer类型
 	}
 	
 	/**
 	 * Determine if a value is an ArrayBuffer
+	 * 
+	 * 判断参数类型是否为 ArrayBuffer
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is an ArrayBuffer, otherwise false
@@ -173,6 +208,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a FormData
+	 * 
+	 * 判断参数类型是否为 form 表单数据
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is an FormData, otherwise false
@@ -183,6 +220,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a view on an ArrayBuffer
+	 * 
+	 * ? ArrayBufferView 未知数据类型 ?
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
@@ -199,6 +238,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a String
+	 * 
+	 * 判断参数类型是否为 string
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a String, otherwise false
@@ -209,6 +250,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a Number
+	 * 
+	 * 判断参数类型是否为 number
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Number, otherwise false
@@ -219,6 +262,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is an Object
+	 * 
+	 * 判断参数类型是否为 object
+	 * ? array 也返回 true ?
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is an Object, otherwise false
@@ -229,6 +275,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a Date
+	 * 
+	 * 判断参数类型是否为 date
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Date, otherwise false
@@ -240,6 +288,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Determine if a value is a File
 	 *
+	 * 判断参数类型是否为 file
+	 * 
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a File, otherwise false
 	 */
@@ -250,6 +300,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Determine if a value is a Blob
 	 *
+	 * 判断参数类型是否为 blob
+	 * 
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Blob, otherwise false
 	 */
@@ -260,6 +312,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Determine if a value is a Function
 	 *
+	 * 判断参数类型是否为 function
+	 * 
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Function, otherwise false
 	 */
@@ -269,6 +323,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a Stream
+	 * 
+	 * 判断参数类型是否为 Stream 流
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a Stream, otherwise false
@@ -279,6 +335,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if a value is a URLSearchParams object
+	 * 
+	 * 判断参数类型是否为 URLSearchParams 对象
 	 *
 	 * @param {Object} val The value to test
 	 * @returns {boolean} True if value is a URLSearchParams object, otherwise false
@@ -289,6 +347,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Trim excess whitespace off the beginning and end of a string
+	 * 
+	 * 手动实现 trim 方法, 去除字符串收尾空格
 	 *
 	 * @param {String} str The String to trim
 	 * @returns {String} The String freed of excess whitespace
@@ -299,6 +359,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Determine if we're running in a standard browser environment
+	 * 
+	 * 判断运行环境是否是 web browser
 	 *
 	 * This allows axios to run in a web worker, and react-native.
 	 * Both environments support XMLHttpRequest, but not fully standard globals.
@@ -326,6 +388,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Iterate over an Array or an Object invoking a function for each item.
+	 * 
+	 * 用来对 array / object 进行遍历, 为每个 项目 / 属性 执行指定方法
 	 *
 	 * If `obj` is an Array callback will be called passing
 	 * the value, index, and complete array for each item.
@@ -338,11 +402,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function forEach(obj, fn) {
 	  // Don't bother if no value provided
+	  // 如果 参数数据类型为 null / undefined 直接 return
 	  if (obj === null || typeof obj === 'undefined') {
 	    return;
 	  }
 	
 	  // Force an array if not already something iterable
+	  // 如果 参数数据类型为 基本类型 则用数组进行包裹
 	  if (typeof obj !== 'object') {
 	    /*eslint no-param-reassign:0*/
 	    obj = [obj];
@@ -350,13 +416,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  if (isArray(obj)) {
 	    // Iterate over array values
+	    // 如果参数为一个数组, 遍历每一项, 为每一项调用 指定方法 fn(item, index, data){}
 	    for (var i = 0, l = obj.length; i < l; i++) {
 	      fn.call(null, obj[i], i, obj);
 	    }
 	  } else {
 	    // Iterate over object keys
 	    for (var key in obj) {
+	      // 如果参数为一个对象, 便利每个自身属性, 为每个属性调用指定方法 fn(value, key, data){}
 	      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+	        // 判断该属性是否是自身属性(从原型链上继承的属性会返回 false)
 	        fn.call(null, obj[key], key, obj);
 	      }
 	    }
@@ -366,6 +435,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Accepts varargs expecting each argument to be an object, then
 	 * immutably merges the properties of each object and returns result.
+	 * 
+	 * 合并多个对象为一个对象
+	 *   多个对象属性重复时, 新的覆盖旧的值
+	 *   如果新旧两个值都是对象，那么合并两个对象
 	 *
 	 * When multiple objects contain the same key the later object in
 	 * the arguments list will take precedence.
@@ -382,6 +455,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function merge(/* obj1, obj2, obj3, ... */) {
 	  var result = {};
+	
 	  function assignValue(val, key) {
 	    if (typeof result[key] === 'object' && typeof val === 'object') {
 	      result[key] = merge(result[key], val);
@@ -399,6 +473,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Function equal to merge with the difference being that no reference
 	 * to original objects is kept.
+	 * 
+	 * 合并多个对象为一个对象
+	 *   与 merge 的区别：如果属性值为对象，那么使用对象遍历后生成新对象进行赋值，解决对象引用地址的问题
 	 *
 	 * @see merge
 	 * @param {Object} obj1 Object to merge
@@ -406,6 +483,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function deepMerge(/* obj1, obj2, obj3, ... */) {
 	  var result = {};
+	
 	  function assignValue(val, key) {
 	    if (typeof result[key] === 'object' && typeof val === 'object') {
 	      result[key] = deepMerge(result[key], val);
@@ -424,6 +502,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Extends object a by mutably adding to it the properties of object b.
+	 * 
+	 * 合并 Object b 上的 属性到 Object a
+	 *   如果 Object b 中的属性值为 方法，那么修改 this 指向为 thisArg 后再添加到 Object a 上
 	 *
 	 * @param {Object} a The object to be extended
 	 * @param {Object} b The object to copy properties from
@@ -431,13 +512,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @return {Object} The resulting value of object a
 	 */
 	function extend(a, b, thisArg) {
-	  forEach(b, function assignValue(val, key) {
+	  function assignValue(val, key) {
 	    if (thisArg && typeof val === 'function') {
 	      a[key] = bind(val, thisArg);
 	    } else {
 	      a[key] = val;
 	    }
-	  });
+	  }
+	  forEach(b, assignValue);
 	  return a;
 	}
 	
@@ -472,12 +554,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	/**
+	 * 改变 function 的 this 指向
+	 *
+	 * @param {Function} fn 需要修改 this 指向的方法
+	 * @param {Object} thisArg fn 内部 this 指向值
+	 */
 	module.exports = function bind(fn, thisArg) {
 	  return function wrap() {
+	    // 组合参数为一个数组 (现在 apply 的第二个参数支持 arguments 这种伪数组了)
+	    // 这里的 arguments 是 wrap 函数的参数
 	    var args = new Array(arguments.length);
 	    for (var i = 0; i < args.length; i++) {
 	      args[i] = arguments[i];
 	    }
+	    // 使用 apply 调用该方法 并 返回执行结果
 	    return fn.apply(thisArg, args);
 	  };
 	};
@@ -487,8 +578,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-25 12:49:25
+	 * @FilePath: \source-code\axios\lib\core\Axios.js
+	 * @Description: 构造函数
+	 */
 	'use strict';
 	
+	// 导入相关工具方法
 	var utils = __webpack_require__(2);
 	var buildURL = __webpack_require__(5);
 	var InterceptorManager = __webpack_require__(6);
@@ -501,7 +600,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} instanceConfig The default config for the instance
 	 */
 	function Axios(instanceConfig) {
+	  // 设置 默认 配置项
 	  this.defaults = instanceConfig;
+	  // 设置 默认 拦截器
 	  this.interceptors = {
 	    request: new InterceptorManager(),
 	    response: new InterceptorManager()
@@ -514,8 +615,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} config The config specific for this request (merged with this.defaults)
 	 */
 	Axios.prototype.request = function request(config) {
-	  /*eslint no-param-reassign:0*/
+	  /* eslint no-param-reassign: 0 */
 	  // Allow for axios('example/url'[, config]) a la fetch API
+	
+	  // 兼容以 axios('url', {}) 方式调用 配置参数可省略
 	  if (typeof config === 'string') {
 	    config = arguments[1] || {};
 	    config.url = arguments[0];
@@ -523,9 +626,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    config = config || {};
 	  }
 	
+	  // 合并 默认配置 和 用户传递配置
 	  config = mergeConfig(this.defaults, config);
 	
 	  // Set config.method
+	  // 处理 请求方式, 默认为 GET
 	  if (config.method) {
 	    config.method = config.method.toLowerCase();
 	  } else if (this.defaults.method) {
@@ -535,17 +640,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  // Hook up interceptors middleware
-	  var chain = [dispatchRequest, undefined];
-	  var promise = Promise.resolve(config);
 	
+	  // 创建一个 promise 执行队列
+	  var chain = [dispatchRequest, undefined];
+	
+	  // 创建 一个 promise 实例
+	  var promise = Promise.resolve(config);
+	  // 等价于 new Promise(resolve => resolve(config))
+	  // promise.then(res => {console.log(res)}) // -> config
+	
+	  // 遍历 请求拦截器，将 每个拦截器 依次添加到执行队列的开头
 	  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
 	    chain.unshift(interceptor.fulfilled, interceptor.rejected);
 	  });
 	
+	  // 遍历 响应拦截器，将 每个拦截器 依次添加到执行队列的结尾
 	  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
 	    chain.push(interceptor.fulfilled, interceptor.rejected);
 	  });
 	
+	  // 遍历执行该队列
 	  while (chain.length) {
 	    promise = promise.then(chain.shift(), chain.shift());
 	  }
@@ -559,6 +673,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	// Provide aliases for supported request methods
+	// 配置 请求别名 方法
 	utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
 	  /*eslint func-names:0*/
 	  Axios.prototype[method] = function(url, config) {
@@ -587,10 +702,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 18:08:18
+	 * @FilePath: \source-code\axios\lib\helpers\buildURL.js
+	 * @Description: url 处理
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
 	
+	// encodeURIComponent 编码后 url 处理，保留以下字符
 	function encode(val) {
 	  return encodeURIComponent(val).
 	    replace(/%40/gi, '@').
@@ -604,55 +727,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Build a URL by appending params to the end
+	 * 
+	 * 处理拼接 url
 	 *
 	 * @param {string} url The base of the url (e.g., http://www.google.com)
 	 * @param {object} [params] The params to be appended
 	 * @returns {string} The formatted url
 	 */
 	module.exports = function buildURL(url, params, paramsSerializer) {
-	  /*eslint no-param-reassign:0*/
+	  /* eslint no-param-reassign: 0 */
 	  if (!params) {
 	    return url;
 	  }
 	
 	  var serializedParams;
 	  if (paramsSerializer) {
+	    // 如果有自定义拼接方法
 	    serializedParams = paramsSerializer(params);
 	  } else if (utils.isURLSearchParams(params)) {
+	    // 如果 params 参数是 url 对象
 	    serializedParams = params.toString();
 	  } else {
 	    var parts = [];
-	
+	    // 遍历 params 对象, 拼接 url 参数
 	    utils.forEach(params, function serialize(val, key) {
+	      // 如果是 null / undefined, 直接跳过
 	      if (val === null || typeof val === 'undefined') {
 	        return;
 	      }
 	
 	      if (utils.isArray(val)) {
+	        // 如果值为数组, 修改 key
 	        key = key + '[]';
 	      } else {
+	        // 否则 将值用数组包裹
 	        val = [val];
 	      }
 	
+	      // 遍历 [value]
 	      utils.forEach(val, function parseValue(v) {
 	        if (utils.isDate(v)) {
 	          v = v.toISOString();
 	        } else if (utils.isObject(v)) {
 	          v = JSON.stringify(v);
 	        }
+	        // 编码后保存
 	        parts.push(encode(key) + '=' + encode(v));
 	      });
 	    });
-	
+	    // 对结果数组进行 join
 	    serializedParams = parts.join('&');
 	  }
 	
 	  if (serializedParams) {
+	    // 移除 hash 参数
 	    var hashmarkIndex = url.indexOf('#');
 	    if (hashmarkIndex !== -1) {
 	      url = url.slice(0, hashmarkIndex);
 	    }
-	
+	    // 生成请求url
 	    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
 	  }
 	
@@ -664,16 +797,26 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-25 12:44:21
+	 * @FilePath: \source-code\axios\lib\core\InterceptorManager.js
+	 * @Description: 拦截器构造函数
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
 	
+	// 拦截器构造函数
 	function InterceptorManager() {
 	  this.handlers = [];
 	}
 	
 	/**
 	 * Add a new interceptor to the stack
+	 * 
+	 * 添加一个拦截器方法，返回拦截器队列长度作为的索引id，用于删除该拦截器
 	 *
 	 * @param {Function} fulfilled The function to handle `then` for a `Promise`
 	 * @param {Function} rejected The function to handle `reject` for a `Promise`
@@ -690,6 +833,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Remove an interceptor from the stack
+	 * 
+	 * 使用 添加拦截器时返回的索引id 删除 一个拦截器方法
 	 *
 	 * @param {Number} id The ID that was returned by `use`
 	 */
@@ -701,6 +846,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Iterate over all the registered interceptors
+	 * 
+	 * 迭代调用所有已注册的拦截器方法
 	 *
 	 * This method is particularly useful for skipping over any
 	 * interceptors that may have become `null` calling `eject`.
@@ -722,6 +869,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 18:30:56
+	 * @FilePath: \source-code\axios\lib\core\dispatchRequest.js
+	 * @Description: 
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
@@ -731,6 +885,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
+	 * 如果取消了请求，那么抛出 Cancel
 	 */
 	function throwIfCancellationRequested(config) {
 	  if (config.cancelToken) {
@@ -740,6 +895,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * Dispatch a request to the server using the configured adapter.
+	 * 
+	 * 使用指定的配置参数向服务器发送请求
 	 *
 	 * @param {object} config The config that is to be used for the request
 	 * @returns {Promise} The Promise to be fulfilled
@@ -748,9 +905,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  throwIfCancellationRequested(config);
 	
 	  // Ensure headers exist
+	  // 处理 请求 header
 	  config.headers = config.headers || {};
 	
 	  // Transform request data
+	  // 处理 请求 data
 	  config.data = transformData(
 	    config.data,
 	    config.headers,
@@ -844,21 +1003,31 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 19:10:12
+	 * @FilePath: \source-code\axios\lib\defaults.js
+	 * @Description: 默认配置项
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
 	var normalizeHeaderName = __webpack_require__(11);
 	
+	// 默认 content-type
 	var DEFAULT_CONTENT_TYPE = {
 	  'Content-Type': 'application/x-www-form-urlencoded'
 	};
 	
+	// 设置请求头的 content-type
 	function setContentTypeIfUnset(headers, value) {
 	  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
 	    headers['Content-Type'] = value;
 	  }
 	}
 	
+	// 处理默认请求发送适配器 (区分 web broswer[xhr] 和 node.js[http])
 	function getDefaultAdapter() {
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
@@ -871,12 +1040,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return adapter;
 	}
 	
+	// 默认配置项
 	var defaults = {
+	  // 请求发送适配器
 	  adapter: getDefaultAdapter(),
 	
+	  // 请求数据处理
 	  transformRequest: [function transformRequest(data, headers) {
+	    // 重新设置 Accept / Content-Type 的字段名，防止大小写导致的字段重复问题
 	    normalizeHeaderName(headers, 'Accept');
 	    normalizeHeaderName(headers, 'Content-Type');
+	
+	    // data 数据处理
+	
+	    // 如果是原生默认支持的格式，直接使用
 	    if (utils.isFormData(data) ||
 	      utils.isArrayBuffer(data) ||
 	      utils.isBuffer(data) ||
@@ -886,13 +1063,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ) {
 	      return data;
 	    }
+	    // ? ArrayBufferView ?
 	    if (utils.isArrayBufferView(data)) {
 	      return data.buffer;
 	    }
+	    // 如果是 url 对象, 转换为字符串
 	    if (utils.isURLSearchParams(data)) {
 	      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
 	      return data.toString();
 	    }
+	    // 如果是 object, 转为 JSON 字符串
 	    if (utils.isObject(data)) {
 	      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
 	      return JSON.stringify(data);
@@ -900,8 +1080,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return data;
 	  }],
 	
+	  // 响应数据处理
 	  transformResponse: [function transformResponse(data) {
-	    /*eslint no-param-reassign:0*/
+	    // 如果返回的数据是 string, 尝试转换为 object
+	    /* eslint no-param-reassign: 0 */
 	    if (typeof data === 'string') {
 	      try {
 	        data = JSON.parse(data);
@@ -914,6 +1096,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * A timeout in milliseconds to abort a request. If set to 0 (default) a
 	   * timeout is not created.
 	   */
+	  // 请求超时时间
 	  timeout: 0,
 	
 	  xsrfCookieName: 'XSRF-TOKEN',
@@ -921,6 +1104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  maxContentLength: -1,
 	
+	  // 响应状态码处理
 	  validateStatus: function validateStatus(status) {
 	    return status >= 200 && status < 300;
 	  }
@@ -947,10 +1131,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 19:00:08
+	 * @FilePath: \source-code\axios\lib\helpers\normalizeHeaderName.js
+	 * @Description: 请求头字段处理
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
 	
+	// 处理 请求头 中 字段大小写不同 导致的字段重复问题
+	// 使用 指定的字段名作为 最终结果
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
 	    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
@@ -1512,6 +1705,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	/*
+	 * @Date: 2020-03-22 14:54:49
+	 * @LastEditors: Wanghao
+	 * @LastEditTime: 2020-03-24 18:49:15
+	 * @FilePath: \source-code\axios\lib\core\mergeConfig.js
+	 * @Description: 配置参数合并
+	 */
 	'use strict';
 	
 	var utils = __webpack_require__(2);
@@ -1519,18 +1719,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Config-specific merge-function which creates a new config-object
 	 * by merging two configuration objects together.
+	 * 
+	 * 合并两个配置对象
+	 *   优先使用 config2 上的属性，如果 config2 上没有对应属性，则使用 config1(default)中的属性
 	 *
-	 * @param {Object} config1
-	 * @param {Object} config2
+	 * @param {Object} config1 默认配置参数
+	 * @param {Object} config2 用户自定义配置参数
 	 * @returns {Object} New object resulting from merging config2 to config1
 	 */
 	module.exports = function mergeConfig(config1, config2) {
 	  // eslint-disable-next-line no-param-reassign
 	  config2 = config2 || {};
 	  var config = {};
-	
+	  
+	  // 需要用户调用时传入的属性 (默认配置中不包含的)
 	  var valueFromConfig2Keys = ['url', 'method', 'params', 'data'];
+	  // 需要深克隆处理的参数
 	  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy'];
+	  // 需要合并处理的其他参数 用户配置优先级 > 默认配置
 	  var defaultToConfig2Keys = [
 	    'baseURL', 'url', 'transformRequest', 'transformResponse', 'paramsSerializer',
 	    'timeout', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
@@ -1539,6 +1745,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'httpsAgent', 'cancelToken', 'socketPath'
 	  ];
 	
+	  // 获取 config2 中的 参数
 	  utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
 	    if (typeof config2[prop] !== 'undefined') {
 	      config[prop] = config2[prop];
@@ -1565,16 +1772,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  });
 	
+	  // 获取所有已处理的参数数组
 	  var axiosKeys = valueFromConfig2Keys
 	    .concat(mergeDeepPropertiesKeys)
 	    .concat(defaultToConfig2Keys);
-	
+	  
+	  // 获取用户配置的其他不在以上参数中的配置
 	  var otherKeys = Object
 	    .keys(config2)
 	    .filter(function filterAxiosKeys(key) {
 	      return axiosKeys.indexOf(key) === -1;
 	    });
-	
+	  // 处理这些其他配置参数
 	  utils.forEach(otherKeys, function otherKeysDefaultToConfig2(prop) {
 	    if (typeof config2[prop] !== 'undefined') {
 	      config[prop] = config2[prop];

@@ -1,9 +1,18 @@
+/*
+ * @Date: 2020-03-22 14:54:49
+ * @LastEditors: Wanghao
+ * @LastEditTime: 2020-03-25 14:34:00
+ * @FilePath: \source-code\axios\lib\core\settle.js
+ * @Description: 
+ */
 'use strict';
 
 var createError = require('./createError');
 
 /**
  * Resolve or reject a Promise based on response status.
+ *
+ * 请求响应状态码处理
  *
  * @param {Function} resolve A function that resolves the promise.
  * @param {Function} reject A function that rejects the promise.

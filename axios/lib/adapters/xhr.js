@@ -10,13 +10,16 @@ var createError = require('../core/createError');
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
+    // 获取 header 和 data
     var requestData = config.data;
     var requestHeaders = config.headers;
 
+    // 如果 data 是 form 数据 则由浏览器自行设置 header
     if (utils.isFormData(requestData)) {
       delete requestHeaders['Content-Type']; // Let the browser set it
     }
 
+    // 创建 xhr 对象
     var request = new XMLHttpRequest();
 
     // HTTP basic authentication
@@ -26,13 +29,17 @@ module.exports = function xhrAdapter(config) {
       requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
     }
 
+    // 拼接 url
     var fullPath = buildFullPath(config.baseURL, config.url);
+    // 处理 url 参数并 初始化请求
     request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
     // Set the request timeout in MS
+    // 设置超时时间 单位毫秒
     request.timeout = config.timeout;
 
     // Listen for ready state
+    // 监听 请求状态 变化
     request.onreadystatechange = function handleLoad() {
       if (!request || request.readyState !== 4) {
         return;
@@ -47,7 +54,9 @@ module.exports = function xhrAdapter(config) {
       }
 
       // Prepare the response
+      // getAllResponseHeaders 返回一个 使用 \r\n 分割的 header 字符串 或者 null
       var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      // 判断响应数据类型
       var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
       var response = {
         data: responseData,
@@ -58,6 +67,7 @@ module.exports = function xhrAdapter(config) {
         request: request
       };
 
+      // 响应状态码判断
       settle(resolve, reject, response);
 
       // Clean up request
@@ -65,6 +75,7 @@ module.exports = function xhrAdapter(config) {
     };
 
     // Handle browser request cancellation (as opposed to a manual cancellation)
+    // 取消请求
     request.onabort = function handleAbort() {
       if (!request) {
         return;
@@ -77,6 +88,7 @@ module.exports = function xhrAdapter(config) {
     };
 
     // Handle low level network errors
+    // 请求错误
     request.onerror = function handleError() {
       // Real errors are hidden from us by the browser
       // onerror should only fire if it's a network error
@@ -87,6 +99,7 @@ module.exports = function xhrAdapter(config) {
     };
 
     // Handle timeout
+    // 请求超时
     request.ontimeout = function handleTimeout() {
       var timeoutErrorMessage = 'timeout of ' + config.timeout + 'ms exceeded';
       if (config.timeoutErrorMessage) {
@@ -116,6 +129,7 @@ module.exports = function xhrAdapter(config) {
     }
 
     // Add headers to the request
+    // 设置 header 属性
     if ('setRequestHeader' in request) {
       utils.forEach(requestHeaders, function setRequestHeader(val, key) {
         if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
@@ -129,6 +143,7 @@ module.exports = function xhrAdapter(config) {
     }
 
     // Add withCredentials to request if needed
+    // 跨站请求是否携带 cookies
     if (!utils.isUndefined(config.withCredentials)) {
       request.withCredentials = !!config.withCredentials;
     }
@@ -175,6 +190,7 @@ module.exports = function xhrAdapter(config) {
     }
 
     // Send the request
+    // 发送请求
     request.send(requestData);
   });
 };
